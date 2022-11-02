@@ -1,30 +1,30 @@
-provider "azurerm" {
-  features {}
-}
-
 resource "azurerm_resource_group" "rg" {
   name     = var.rg_name
   location = var.location
 }
 
-resource "azurerm_service_plan" "service_plan" {
-  name                = var.app_plan_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  os_type             = "Linux"
-  sku_name            = "S1"
+resource "azurecaf_name" "app_plan_name" {
+  name          = "webvideo"
+  resource_type = "azurerm_app_service_plan"
+  prefixes      = ["dev"]
+  suffixes      = [var.location]
+  random_length = 3
+  clean_input   = true
 }
 
-resource "azurerm_linux_web_app" "web_app" {
-  name                = var.app_service_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_service_plan.service_plan.location
-  service_plan_id     = azurerm_service_plan.service_plan.id
+resource "azurecaf_name" "web_app_name" {
+  name          = "webvideo"
+  resource_type = "azurerm_app_service"
+  prefixes      = ["dev"]
+  suffixes      = [var.location]
+  random_length = 3
+  clean_input   = true
+}
 
-
-  site_config {
-      application_stack {
-        dotnet_version = "6.0"
-      } 
-  }
+module "webapp" {
+  source           = "./modules/webapp"
+  rg_name          = azurerm_resource_group.rg.name
+  location         = azurerm_resource_group.rg.location
+  app_plan_name    = azurecaf_name.app_plan_name.result
+  app_service_name = azurecaf_name.web_app_name.result
 }
