@@ -9,13 +9,3 @@ variable "location" {
   default     = "eastus2"
 }
 
-variable "app_plan_name" {
-  type        = string
-  description = "Nombre del App Service Plan"
-}
-
-variable "app_service_name" {
-  type        = string
-  description = "Nombre de la aplicación web basada en Linux"
-}
-
